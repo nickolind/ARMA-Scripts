@@ -84,21 +84,21 @@ publicVariable "hmg_privateBoxes";
 
 //Удаление ящиков для отделений занятых менее чем наполовину:
 //---------------------------
-waitUntil {sleep 1; time > 0};
+// waitUntil {sleep 1; time > 0};
 
-{
-	if (_x isKindOf "Thing") then {
-		_unit = _x;
-		_playersNum = 0;
-		_ownGrps = _unit getVariable "hmg_boxOwnedBy";
+// {
+	// if (_x isKindOf "Thing") then {
+		// _unit = _x;
+		// _playersNum = 0;
+		// _ownGrps = _unit getVariable "hmg_boxOwnedBy";
 		
-		{
-			_playersNum = _playersNum + ({isPlayer _x} count units _x);
-		} forEach _ownGrps;
-		if (_playersNum < ( ({count units _x} forEach _ownGrps) / 2) ) then {
-			_unit setVariable ["hmg_boxOwnedBy", nil, true];
-			deleteVehicle _unit;
-		};
-	};
-} forEach hmg_privateBoxes;
+		// {
+			// _playersNum = _playersNum + ({isPlayer _x} count units _x);
+		// } forEach _ownGrps;
+		// if (_playersNum < ( ({count units _x} forEach _ownGrps) / 2) ) then {
+			// _unit setVariable ["hmg_boxOwnedBy", nil, true];
+			// deleteVehicle _unit;
+		// };
+	// };
+// } forEach hmg_privateBoxes;
 //----------------------------

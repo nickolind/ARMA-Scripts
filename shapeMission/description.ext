@@ -1,0 +1,34 @@
+﻿respawn 			= 1;
+respawnDelay		= 5;
+disableChannels[]	= {0,2,4,5,6};
+enableDebugConsole	= 1;
+corpseRemovalMinTime= 86400;
+wreckRemovalMinTime = 86400;
+
+
+//onLoadName = "Бросок кобры";
+//author = "[DH] Nickorr";
+//overviewPicture = "logo.jpg";
+//overviewText = "Режим: ТВД v1.05 |  Версия миссии: 1.05";
+
+class Header
+{
+	gameType=RPG;
+	minPlayers=1;
+	maxPlayers=180;
+};
+class WMT_Param 
+{
+CampaignBriefingMode = 1;
+};
+
+class Params
+{
+	class PlayersCount
+	{
+		title = "Версия миссии (по количеству игроков)"; 								// Param name visible in the list
+		values[] = {0, 		1, 			2, 			3, 			666}; 				// 60, 100, 130, max (160)
+		texts[] = {"30-60", "60-100",	"100-130",	"130-160",	"DEBUG"}; 				// Description of each selectable item
+		default = 0; 																	// Default value; must be listed in 'values' array, otherwise 0 is used
+	};
+};

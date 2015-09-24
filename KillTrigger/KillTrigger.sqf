@@ -3,7 +3,7 @@
 null = [thislist, thisTrigger, (TriggerMode), [(objList)], [(groupList)], (willKill), (timeToWait), (customText)] execVM "KillTrigger.sqf"
 
 Параметры по умолчанию:
-null = [thislist, thisTrigger, 0, [], [], 1, 10] execVM "KillTrigger.sqf"
+null = [thislist, thisTrigger, 0, [], [], 1, 15] execVM "KillTrigger.sqf"
 
 ---
 Принцип работы:
@@ -21,7 +21,7 @@ null = [thislist, thisTrigger, 0, [], [], 1, 10] execVM "KillTrigger.sqf"
 - [objList] (опционально) : список объектов по имени, которые будут включены/исключены из проверки скриптом (в зависимости от режима работы)
 - [groupList] (опционально) : список групп по имени, которые будут включены/исключены из проверки скриптом (в зависимости от режима работы)
 - willKill (опционально) : 1 - триггер будет убивать сразу, 0 - нелетальный эффект. ПО УМОЛЧАНИЮ = 1
-- timeToWait (опционально) : продолжительность (в секундах) предупреждения об опасности, затем сработает скрипт наказания (убийство/нелетально). ПО УМОЛЧАНИЮ = 10
+- timeToWait (опционально) : продолжительность (в секундах) предупреждения об опасности, затем сработает скрипт наказания (убийство/нелетально). ПО УМОЛЧАНИЮ = 15
 - customText (опционально) : собственный текст предупреждения об опасности (до срабатывания наказания).
 
 
@@ -38,8 +38,8 @@ null = [thislist, thisTrigger, 0, [], [], 1, 10] execVM "KillTrigger.sqf"
 null = [thislist, thisTrigger, 1, [], [grpSPN, grpDRG, grpTerminators], 1, 10] execVM "KillTrigger.sqf"
 скрипт будет предупреждать в течении 10 секунд об опасности, а потом убьет всех, кроме членов групп grpSPN, grpDRG и grpTerminators
 
-null = [thislist, thisTrigger, 1, [superPlane, indestructableTank, RemboSoldier, BoxWithNarcotics], [], 0, 15, "Шеф, все пропало!"] execVM "KillTrigger.sqf"
-Скрипт будет предупреждать об опасности в течении 15 секунд с текстом "Шеф, все пропало!", у потом применит нелетальное воздействие на всех, кроме объектов superPlane, indestructableTank, RemboSoldier, BoxWithNarcotics.
+null = [thislist, thisTrigger, 1, [superPlane, indestructableTank, RemboSoldier, BoxWithNarcotics], [], 0, 25, "Шеф, все пропало!"] execVM "KillTrigger.sqf"
+Скрипт будет предупреждать об опасности в течении 25 секунд с текстом "Шеф, все пропало!", у потом применит нелетальное воздействие на всех, кроме объектов superPlane, indestructableTank, RemboSoldier, BoxWithNarcotics.
 
 
 								by Nickorr
@@ -57,7 +57,7 @@ if (isServer) then {
 	_objList = [];
 	_grpList = [];
 	_willKill = 1;
-	_timeToWait = 10;
+	_timeToWait = 15;
 	_message = "Вы зашли в запретную зону и вот-вот умрете. Вернитесь немедленно!";
 	
 	
@@ -68,7 +68,7 @@ if (isServer) then {
 			_objList = [];																		//  	<-----------------------Список имен объектов ВПИСЫВАТЬ СЮДА (если вручную)
 			_grpList = [];																		//  	<-----------------------Список имен групп ВПИСЫВАТЬ СЮДА (если вручную)
 			_willKill = 1;																		//  	<-----------------------Смертельный или нет
-			_timeToWait = 10;																	//  	<-----------------------Время ожидания
+			_timeToWait = 15;																	//  	<-----------------------Время ожидания
 			_message = "Вы зашли в запретную зону и вот-вот умрете. Вернитесь немедленно!";		//  	<-----------------------Свое сообщение-предупреждение
 		};
 		CASE 4:

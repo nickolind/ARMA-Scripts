@@ -66,8 +66,9 @@ _playersList = [];
 } forEach list _trig;
 
 {
-	_x setVehicleLock "LOCKED";
-	sleep 0.01;
+	// _x setVehicleLock "LOCKED";
+	_x lockDriver true;
+	// sleep 0.01;
 } forEach _vehList;
 
 if (_tMode == 1) then {
@@ -135,7 +136,7 @@ waitUntil {sleep 1; WMT_pub_frzState >= 3}; //==3 when freeze over, ==1 when fre
 						
 						_tLeftL = _ttwL - (serverTime - _timeL);
 						
-						hint format ['Дополнительный фризтайм.\nДо разблокировки техники:\n\n%1m, %2s', floor (_tLeftL / 60), floor (((_tLeftL / 60) - floor (_tLeftL / 60)) * 60) ];
+						hint format ['Дополнительный фризтайм.\nДо разблокировки техники:\n\n%1', [_tLeftL,"MM:SS"] call BIS_fnc_secondsToString];
 						
 						if !(player in list _trigL) exitWith {																//Если юнит вышел из триггера, убираем у него состояние "уведомлен" и выходим из цикла, завершая клиентский блок кода
 							player setVariable ["ns_warned", nil, true];
@@ -170,8 +171,12 @@ waitUntil  {
 
 		//------------------------------------Фризтайм окончен:
 {
-	_x setVehicleLock "UNLOCKED";
-	sleep 0.01;
+	// _x setVehicleLock "UNLOCKED";
+	[[ [_x], {
+		(_this select 0) lockDriver false;
+	}],"BIS_fnc_call",_x] call BIS_fnc_MP;
+		
+	// sleep 0.01;
 } forEach _vehList;
 {
 	_x setVariable ["ns_warned", nil, true];

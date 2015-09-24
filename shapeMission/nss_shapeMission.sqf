@@ -24,7 +24,7 @@ if (isServer) then {
 		ns_sm_debug = true;
 		publicVariable "ns_sm_debug";
 	} else {
-		_markerstr  setMarkerText ("Выбрана версия миссии для " + (_thVars select _selectedThreshold) + " игроков.");
+		_markerstr  setMarkerText ("Выбрана версия миссии: " + (_thVars select _selectedThreshold));
 		if (_selectedThreshold < _neededThreshold) then {
 			deleteVehicle _unit;
 		};
