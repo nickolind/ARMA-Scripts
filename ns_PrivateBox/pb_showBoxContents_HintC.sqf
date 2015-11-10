@@ -2,7 +2,6 @@
 null = [_container] execVM "ns_PrivateBox\pb_showBoxContents_HintC.sqf";
 Вызвается из pb_client.sqf
 
-Скрипт зависит от функций AGM Interaction - без этого компонента, вызывать скрипт не стоит.
 */
 private ["_unit", "_listedItemClasses", "_allGear", "_compText"];
 

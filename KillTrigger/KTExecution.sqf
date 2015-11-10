@@ -67,9 +67,11 @@ if (_victim in vehicles) then {
 		if (_willKill == 1) then {
 			_victim setDammage 1;		//Убиваем...
 		} else {
-			[_victim, 60] call AGM_Medical_fnc_knockOut;
+			[_victim, true, 60] call ace_medical_fnc_setUnconscious;
+			// [_victim, 60] call AGM_Medical_fnc_knockOut;		//Переход на ACE
 			sleep 10;
-			[_victim, true] call AGM_Captives_fnc_setCaptive;
+			[_victim, true] call ACE_captives_fnc_setHandcuffed;
+			// [_victim, true] call AGM_Captives_fnc_setCaptive;		//Переход на ACE
 			moveOut _victim;
 			sleep 5;
 			
@@ -83,9 +85,12 @@ if (_victim in vehicles) then {
 					_ns_mark setMarkerType "mil_warning";
 					_ns_mark setMarkerColor "ColorOrange";
 					_ns_mark setMarkerText ("Нарушитель взят в плен");
-					while {_i < 12} do {
+					while {(_i < 60)} do {
 						sleep 5;
-						_ns_mark setMarkerPos (position _s_victim);
+						// _ns_mark setMarkerPos (position _s_victim);
+						if ( (_s_victim getVariable ["ace_captives_ishandcuffed", false]) ) then {_ns_mark setMarkerPos (position _s_victim);};
+						// if ( (_s_victim getVariable [QGVAR(isHandcuffed), false]) ) then {_ns_mark setMarkerPos (position _s_victim);};
+						// if (alive _s_victim) then {_ns_mark setMarkerPos (position _s_victim);};
 						_i = _i + 1;
 					};
 					deleteMarker _ns_mark;
