@@ -85,6 +85,11 @@ if (_victim in vehicles) then {
 					_ns_mark setMarkerType "mil_warning";
 					_ns_mark setMarkerColor "ColorOrange";
 					_ns_mark setMarkerText ("Нарушитель взят в плен");
+					
+					[[[], {
+						["Нарушитель взят в плен (см.карту)",0,0.9,3,0.7] call bis_fnc_dynamictext;
+					}],"BIS_fnc_call"] call BIS_fnc_MP;
+					
 					while {(_i < 60)} do {
 						sleep 5;
 						// _ns_mark setMarkerPos (position _s_victim);
