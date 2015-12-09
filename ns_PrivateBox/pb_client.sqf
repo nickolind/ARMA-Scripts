@@ -33,8 +33,8 @@ player addEventHandler ["InventoryOpened", {
 		if !(group _unit in _tArray ) then {
 			_result = true;
 			hint parseText format ["<t color='#ff0000'>У вас нет доступа.</t><br/><br/>Ящик принадлежит:<br/>%1", _str];
-			// null = [_container] execVM "ns_PrivateBox\pb_showBoxContents_HintC.sqf";														// Реализация без зависимостей от платформ или модов (через hintC)
-			null = [_container] execVM "ns_PrivateBox\pb_showBoxContents_ACE.sqf";													// ЗАВИСИМОСТЬ ОТ ФУНКЦИЙ AGM: ACE_Interaction_fnc_ 	
+			null = [_container] execVM "ns_PrivateBox\pb_showBoxContents_HintC.sqf";														// Реализация без зависимостей от платформ или модов (через hintC)
+			// null = [_container] execVM "ns_PrivateBox\pb_showBoxContents_ACE.sqf";													// ЗАВИСИМОСТЬ ОТ ФУНКЦИЙ AGM: ACE_Interaction_fnc_ 	
 		} else {
 			hint parseText format ["Ящик принадлежит:<br/>%1", _str];
 		}; 
