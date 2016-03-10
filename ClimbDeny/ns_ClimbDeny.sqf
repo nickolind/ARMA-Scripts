@@ -110,12 +110,13 @@ ns_cd_vehPassabilityArray = [
 ];
 
 ns_cd_slippingActive = false;
-ns_cd_vehPassability = ( ns_cd_vehPassabilityArray select (count ns_cd_vehPassabilityArray - 1) ) select 1;
+// ns_cd_vehPassability = ( ns_cd_vehPassabilityArray select (count ns_cd_vehPassabilityArray - 1) ) select 1;
 ns_cd_timeToSlip = 6;
 ns_cd_escapeVeh = false;
 
 private ["_curVeh"];
 
+_curVeh = objNull;
 
 ns_cd_calculate_MSA = {
 	private ["_terrainCoef"];
@@ -137,44 +138,44 @@ ns_cd_calculate_MSA = {
 };
 
 ns_getVehClassname = {
-	private ["_vehicle"];
+	private ["_vehicle","_vcn_found","_vcn_result"];
 	
 	_vehicle = _this select 0;
 	
-	ns_vcn_found = false;
-	ns_vcn_result = [];
+	_vcn_found = false;
+	_vcn_result = [];
 	
-	if (!(ns_vcn_found) && !(isNil"ns_cd_custom_vehPassability")) then {
+	if (!(_vcn_found) && !(isNil"ns_cd_custom_vehPassability")) then {
 		
 		{	
-			if ( (_x select 0) == typeof _vehicle ) exitWith {ns_vcn_found = true; ns_vcn_result = _x};	
+			if ( (_x select 0) == typeof _vehicle ) exitWith {_vcn_found = true; _vcn_result = _x};	
 		} forEach ns_cd_custom_vehPassability;
 	};
 
-	if !(ns_vcn_found) then {
+	if !(_vcn_found) then {
 		{	
-			if ( (_x select 0) == typeof _vehicle ) exitWith {ns_vcn_found = true; ns_vcn_result = _x};	
+			if ( (_x select 0) == typeof _vehicle ) exitWith {_vcn_found = true; _vcn_result = _x};	
 		} forEach ns_cd_vehPassabilityArray;
 	};
 
-	if !(ns_vcn_found) then {
+	if !(_vcn_found) then {
 		{	
 			if ( 
 				(((toArray(_x select 0)) select 0) == 35) // 35 = "#"
 				&& 
 				( ( toUpper(typeof _vehicle) find ((_x select 0) select [1]) ) != -1 )
 			
-			) exitWith {ns_vcn_found = true; ns_vcn_result = _x};	
+			) exitWith {_vcn_found = true; _vcn_result = _x};	
 			
 		} forEach ns_cd_vehPassabilityArray;
 	};
 
-	if (!(ns_vcn_found) ) then {
-		ns_vcn_found = true; 
-		ns_vcn_result = ns_cd_vehPassabilityArray select (count ns_cd_vehPassabilityArray - 1);	// ["DEFAULT",			31]
+	if (!(_vcn_found) ) then {
+		_vcn_found = true; 
+		_vcn_result = ns_cd_vehPassabilityArray select (count ns_cd_vehPassabilityArray - 1);	// ["DEFAULT",			31]
 	};
 	
-	ns_vcn_result
+	_vcn_result
 };
 
 
@@ -188,8 +189,9 @@ ns_climbAngleLimitExceeded = {
 ns_spReduceSoft = {	 
 	while {ns_cd_testing && !ns_cd_escapeVeh} do {
 		sleep 0.05;
-		ns_cd_limit = (ns_cd_limit - 1) max 0;
-		// ns_cd_limit = (ns_cd_limit - (3 * (2 / (ns_cd_limit max 4)))) max 0;
+		
+		ns_cd_limit = (ns_cd_limit - 1) max 0;												// Линейное замедление
+		// ns_cd_limit = (ns_cd_limit - (3 * (2 / (ns_cd_limit max 4)))) max 0;				// Нелинейное замедление (не подобрана функция)
 		if ( 
 			(ns_cd_limit <= (_this select 1)) 
 			|| 
@@ -249,21 +251,21 @@ while {ns_cd_testing} do {
 		ns_cd_gl_counter = 0;
 		ns_lc_coef = 0;
 				
-		ns_cd_vehPassability = ( [_curVeh] call ns_getVehClassname ) select 1;
+		// ns_cd_vehPassability = ( [_curVeh] call ns_getVehClassname ) select 1;
 
-		[_curVeh, ns_cd_vehPassability] spawn ns_cd_calculate_MSA;
+		// [_curVeh, ns_cd_vehPassability] spawn ns_cd_calculate_MSA;
+		[_curVeh, ( [_curVeh] call ns_getVehClassname ) select 1 ] spawn ns_cd_calculate_MSA;
 
 		
 		["ns_ClimbDeny_loop", "onEachFrame", {
 		
-			private ["_driver","_vehicle","_speed"];
+			private ["_vehicle","_speed"];
 			
-			_driver = _this select 0;
-			_vehicle = _this select 1;
+			_vehicle = _this select 0;
 			
 			// убрать hint
 			hint format ["%1\n%2\n%3\n%4\n%5\n%6\n%7\n%8\n%9\n%10", 
-				ns_vcn_result,
+				"-",
 				acos ((vectorUp _vehicle) vectorDotProduct ([0,0,1])),
 				(acos ((surfaceNormal position _vehicle) vectorDotProduct ([0,0,1]) )),
 				ns_cd_limit,
@@ -275,7 +277,7 @@ while {ns_cd_testing} do {
 				ns_spolz_hint
 			];
 
-			if ( (_driver != driver _vehicle) || !(ns_cd_testing) ) then {
+			if ( (player != driver _vehicle) || !(ns_cd_testing) ) then {
 				["ns_ClimbDeny_loop", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
 				ns_cd_escapeVeh = true;
 				hint ""; // убрать hint
@@ -333,7 +335,7 @@ while {ns_cd_testing} do {
 				ns_cd_loop_ticker = 0;
 			} else {ns_cd_loop_ticker = ns_cd_loop_ticker + 1};
 			
-		}, [player, _curVeh]] call BIS_fnc_addStackedEventHandler;
+		}, [_curVeh]] call BIS_fnc_addStackedEventHandler;
 		
 		
 		waitUntil {sleep 0.5; ns_cd_escapeVeh || !ns_cd_testing};
