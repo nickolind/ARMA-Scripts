@@ -1,3 +1,4 @@
+// null = [] execVM "fn_ClimbDeny_Main.sqf";
 
 /*
 
@@ -208,25 +209,24 @@ while {NSA_CD_active} do {
 			_vehicle = _this select 0;
 			
 			// убрать hint
-			
-			hint format ["%1\n%2\n%3\n%4\n%5\n%6\n%7\n%8\n%9\n%10", 
-				( [_vehicle] call NSA_CD_fn_getVehClassname ),
-				NSA_CD_maxSlopeAngle,
-				acos ((vectorUp _vehicle) vectorDotProduct ([0,0,1])),
-				(acos ((surfaceNormal position _vehicle) vectorDotProduct ([0,0,1]) )),
-				NSA_CD_limit,
-				speed _vehicle,
-				velocity _vehicle,
-				NSA_CD_lcCoef,
-				NSA_CD_lcTick,
-				NSA_CD_gl_counter
-			];
+			// hint format ["%1\n%2\n%3\n%4\n%5\n%6\n%7\n%8\n%9\n%10", 
+				// ( [_vehicle] call NSA_CD_fn_getVehClassname ),
+				// NSA_CD_maxSlopeAngle,
+				// acos ((vectorUp _vehicle) vectorDotProduct ([0,0,1])),
+				// (acos ((surfaceNormal position _vehicle) vectorDotProduct ([0,0,1]) )),
+				// NSA_CD_limit,
+				// speed _vehicle,
+				// velocity _vehicle,
+				// NSA_CD_lcCoef,
+				// NSA_CD_lcTick,
+				// NSA_CD_gl_counter
+			// ];
 			
 
 			if ( (player != driver _vehicle) || !(NSA_CD_active) ) then {
 				["NSA_ClimbDeny_loop", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
 				NSA_CD_escapeVeh = true;
-				hint ""; // убрать hint
+				// hint ""; // убрать hint
 			};
 
 			_speed = abs(speed _vehicle);
