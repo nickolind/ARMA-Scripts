@@ -1,6 +1,8 @@
-// null = [] execVM "fn_ClimbDeny_Main.sqf";
 
 /*
+
+Вызов скрипта из init.sdf строкой:
+	null = [] execVM "fn_ClimbDeny_Main.sqf";
 
 Свои значения проходимости (может задать картодел в init.sqf):
 	NSA_CD_custom_vehPassability = [ ["rhs_sprut_vdv",35], ["rhs_2s3_tv",30] ];
