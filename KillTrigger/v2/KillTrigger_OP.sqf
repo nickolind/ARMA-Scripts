@@ -1,9 +1,9 @@
 ﻿/* Not working properly with drones
 Вызов из триггера, в поле OnActivation:
-null = [thislist, thisTrigger, (timeToWait), (TriggerMode), [(objList)], [(groupList)], (customText)] execVM "KillTrigger_OP.sqf";
+null = [thislist, thisTrigger, (timeToWait), (TriggerMode), (KT_Height), [(objList)], [(groupList)], (MapNotify), (customText)] execVM "KillTrigger_OP.sqf";
 
 Параметры по умолчанию:
-null = [thislist, thisTrigger, 15, 0, [], [], "Вы зашли в запретную зону. Вернитесь немедленно!"] execVM "KillTrigger_OP.sqf";
+null = [thislist, thisTrigger, 15, 0, 50, [], [], 0, "Вы зашли в запретную зону. Вернитесь немедленно!"] execVM "KillTrigger_OP.sqf";
 
 ---
 Принцип работы:
@@ -19,8 +19,10 @@ null = [thislist, thisTrigger, 15, 0, [], [], "Вы зашли в запретн
 
 - timeToWait (опционально) : продолжительность (в секундах) предупреждения об опасности, затем сработает скрипт наказания (убийство/нелетально). ПО УМОЛЧАНИЮ = 15
 - TriggerMode (опционально) : режим работы скрипта (см.ниже). ПО УМОЛЧАНИЮ = 0
+- KT_Height (опционально) : высота над уровнем земли, начиная с которой срабатывает КТ
 - [objList] (опционально) : список объектов по имени, которые будут включены/исключены из проверки скриптом (в зависимости от режима работы)
 - [groupList] (опционально) : список групп по имени, которые будут включены/исключены из проверки скриптом (в зависимости от режима работы)
+- MapNotify (опционально) : если значение >=1, то при заходе в КТ, на юнит будет устанавливаться маркер на карте с указанным интервалом (в секундах)
 - customText (опционально) : собственный текст предупреждения об опасности (до срабатывания наказания).
 
 
@@ -35,11 +37,11 @@ null = [thislist, thisTrigger, 15, 0, [], [], "Вы зашли в запретн
 ---
 Пример вызова:
 
-null = [thislist, thisTrigger, 10, 1, [], [grpSPN, grpDRG, grpTerminators]] execVM "KillTrigger_OP.sqf";
+null = [thislist, thisTrigger, 10, 1, 50, [], [grpSPN, grpDRG, grpTerminators]] execVM "KillTrigger_OP.sqf";
 скрипт будет предупреждать в течении 10 секунд об опасности, а потом убьет всех, кроме членов групп grpSPN, grpDRG и grpTerminators
 
-null = [thislist, thisTrigger, 25, 1, [superPlane, indestructableTank, RemboSoldier, BoxWithNarcotics], [], "Шеф, все пропало!"] execVM "KillTrigger_OP.sqf";
-Скрипт будет предупреждать об опасности в течении 25 секунд с текстом "Шеф, все пропало!", у потом убьет/уничтожит всех, кроме объектов superPlane, indestructableTank, RemboSoldier, BoxWithNarcotics.
+null = [thislist, thisTrigger, 60, 1, 50, [superPlane, indestructableTank, RemboSoldier, BoxWithNarcotics], [], 10, "Шеф, все пропало!"] execVM "KillTrigger_OP.sqf";
+Скрипт будет предупреждать об опасности в течении 60 секунд с текстом "Шеф, все пропало!" (на карте раз в 10сек. будет обновляться маркер на нарушителей), и потом убьет/уничтожит всех, кроме объектов superPlane, indestructableTank, RemboSoldier, BoxWithNarcotics.
 
 
 								by Nickorr
@@ -48,15 +50,17 @@ if (isServer) then {
 
 	if (missionNamespace getVariable ["ns_sm_debug", false]) exitWith {};
 
-	private ["_thisList","_tName","_tMode","_objList","_grpList","_timeToWait","_message","_cveh","_isInGrp","_vehToKill","_y","_z"];
+	private ["_thisList","_tName","_tMode","_objList","_grpList","_tHight","_timeToWait","_mNotify","_message","_cveh","_isInGrp","_vehToKill","_y","_z"];
 
 	_thisList = _this select 0;												// Использовать для ручного ввода параметров прямо в скрипт (при условии что скрипт был вызван следующей строкой):
 	_tName = _this select 1;												// null = [thislist, thisTrigger] execVM "KillTrigger_OP.sqf"
 	
 	_timeToWait = 15;														//  	<-----------------------Время ожидания
 	_tMode = 0;
+	_tHight = 50;
 	_objList = [];															//  	<-----------------------Список имен объектов ВПИСЫВАТЬ СЮДА (если вручную)
 	_grpList = [];															//  	<-----------------------Список имен групп ВПИСЫВАТЬ СЮДА (если вручную)
+	_mNotify = 0;
 	_message = "Вы зашли в запретную зону. Вернитесь немедленно!";			//  	<-----------------------Свое сообщение-предупреждение
 	
 	
@@ -74,26 +78,46 @@ if (isServer) then {
 		{
 			_timeToWait = _this select 2;
 			_tMode = _this select 3;
-			_objList = _this select 4;
+			_tHight = _this select 4;
 		};
 		CASE 6:
 		{
 			_timeToWait = _this select 2;
 			_tMode = _this select 3;
-			_objList = _this select 4;
-			_grpList = _this select 5;
+			_tHight = _this select 4;
+			_objList = _this select 5;
 		};
 		CASE 7:
 		{
 			_timeToWait = _this select 2;
 			_tMode = _this select 3;
-			_objList = _this select 4;
-			_grpList = _this select 5;
-			_message = _this select 6;
+			_tHight = _this select 4;
+			_objList = _this select 5;
+			_grpList = _this select 6;
+		};
+		CASE 8:
+		{
+			_timeToWait = _this select 2;
+			_tMode = _this select 3;
+			_tHight = _this select 4;
+			_objList = _this select 5;
+			_grpList = _this select 6;
+			_mNotify = _this select 7;
+		};
+		CASE 9:
+		{
+			_timeToWait = _this select 2;
+			_tMode = _this select 3;
+			_tHight = _this select 4;
+			_objList = _this select 5;
+			_grpList = _this select 6;
+			_mNotify = _this select 7;
+			_message = _this select 8;
 		};
 	};
 	
-	if ('(x2)' in triggerText _tName) then { _timeToWait = round(_timeToWait / 2) };
+	// if ( ('(x2)' in triggerText _tName) || ('(х2)' in triggerText _tName) ) then { _timeToWait = round(_timeToWait / 2) };
+	if ( ( (triggerText _tName) find 'x2' != -1) || ((triggerText _tName) find 'х2' != -1) ) then { _timeToWait = round(_timeToWait / 2) };
 	
 	
 	switch (_tMode) do {
@@ -103,7 +127,7 @@ if (isServer) then {
 				{
 					_cveh = list _tName select _forEachIndex;
 					
-					if ( !(_cveh in _objList) && ( (getPosATL _cveh select 2) <= 50 ) ) then {		//Проверка на машину-контейнер-безопасности - не учитывать ее и всех пассажиров, если она в списке	
+					if ( !(_cveh in _objList) && ( (getPosATL _cveh select 2) <= _tHight ) ) then {		//Проверка на машину-контейнер-безопасности - не учитывать ее и всех пассажиров, если она в списке	
 						
 						for [{_y=0},{_y<(count (crew _cveh))},{_y=_y+1}] do {			//скан списка пассажиров юнита, вошедшего в триггер. Если юнит это транспорт - массив экипажа. Если это боец - он сам.
 							_isInGrp = false;
@@ -117,7 +141,7 @@ if (isServer) then {
 								if ((crew _cveh select _y) getVariable "NSA_KT_Sent" != 0) exitWith {}; 		//Если у текущего юнита статус sentinel = 1, значит этого юнита уже обрабатывает скрипт - выходим из цикла
 									
 								(crew _cveh select _y) setVariable ["NSA_KT_Sent", -1, true];
-								[[[_tName, _cveh, crew _cveh select _y, _timeToWait, _message],"KTExecution_OP.sqf"],"BIS_fnc_execVM", crew _cveh select _y] call BIS_fnc_MP;
+								[[[_tName, _cveh, crew _cveh select _y, _timeToWait, _tHight, _mNotify, _message],"KTExecution_OP.sqf"],"BIS_fnc_execVM", crew _cveh select _y] call BIS_fnc_MP;
 							};
 						};
 					};
@@ -133,14 +157,14 @@ if (isServer) then {
 				{
 					_cveh = list _tName select _forEachIndex;
 					
-					if ( (getPosATL _cveh select 2) <= 50 ) then {
+					if ( (getPosATL _cveh select 2) <= _tHight ) then {
 					
 						if (_cveh in _objList) exitWith {
 							// _vehToKill = 1;
 							if (_cveh getVariable "NSA_KT_Sent" != 0) exitWith {}; 		//Если у текущего юнита статус sentinel = 1, значит этого юнита уже обрабатывает скрипт - выходим из цикла
 								
 							_cveh setVariable ["NSA_KT_Sent", -1, true];
-							[[[_tName, _cveh, _cveh, _timeToWait, _message],"KTExecution_OP.sqf"],"BIS_fnc_execVM", _cveh] call BIS_fnc_MP;
+							[[[_tName, _cveh, _cveh, _timeToWait, _tHight, _mNotify, _message],"KTExecution_OP.sqf"],"BIS_fnc_execVM", _cveh] call BIS_fnc_MP;
 						};
 						
 
@@ -156,7 +180,7 @@ if (isServer) then {
 								if ((crew _cveh select _y) getVariable "NSA_KT_Sent" != 0) exitWith {}; 		//Если у текущего юнита статус sentinel = 1, значит этого юнита уже обрабатывает скрипт - выходим из цикла
 									
 								(crew _cveh select _y) setVariable ["NSA_KT_Sent", -1, true];
-								[[[_tName, _cveh, crew _cveh select _y, _timeToWait, _message],"KTExecution_OP.sqf"],"BIS_fnc_execVM", crew _cveh select _y] call BIS_fnc_MP;
+								[[[_tName, _cveh, crew _cveh select _y, _timeToWait, _tHight, _mNotify, _message],"KTExecution_OP.sqf"],"BIS_fnc_execVM", crew _cveh select _y] call BIS_fnc_MP;
 							};
 						};
 					};
@@ -178,7 +202,7 @@ if (isServer) then {
 							if ( ((crew _cveh select _y) getVariable "NSA_KT_Sent" != 0) && ((crew _cveh select _y) getVariable ["NSA_KT_SentInner",0] == 0) ) then {
 							
 								(crew _cveh select _y) setVariable ["NSA_KT_SentInner", -1, true];
-								[[[_tName, _cveh, crew _cveh select _y, _timeToWait, "inner"],"KTExecution_OP.sqf"],"BIS_fnc_execVM", crew _cveh select _y] call BIS_fnc_MP;
+								[[[_tName, _cveh, crew _cveh select _y, _timeToWait, _tHight, _mNotify, "inner"],"KTExecution_OP.sqf"],"BIS_fnc_execVM", crew _cveh select _y] call BIS_fnc_MP;
 							
 							}; 
 						};
@@ -193,13 +217,13 @@ if (isServer) then {
 				{
 					_cveh = list _tName select _forEachIndex;
 						
-					if ( (getPosATL _cveh select 2) <= 50 ) then {
+					if ( (getPosATL _cveh select 2) <= _tHight ) then {
 						for [{_y=0},{_y<(count (crew _cveh))},{_y=_y+1}] do {			//скан списка пассажиров юнита, вошедшего в триггер. Если юнит это транспорт - массив экипажа. Если это боец - он сам.
 						
 							if ((crew _cveh select _y) getVariable "NSA_KT_Sent" != 0) exitWith {}; 		//Если у текущего юнита статус sentinel = 1, значит этого юнита уже обрабатывает скрипт - выходим из цикла
 								
 							(crew _cveh select _y) setVariable ["NSA_KT_Sent", -1, true];
-							[[[_tName, _cveh, crew _cveh select _y, _timeToWait, _message],"KTExecution_OP.sqf"],"BIS_fnc_execVM", crew _cveh select _y] call BIS_fnc_MP;
+							[[[_tName, _cveh, crew _cveh select _y, _timeToWait, _tHight, _mNotify, _message],"KTExecution_OP.sqf"],"BIS_fnc_execVM", crew _cveh select _y] call BIS_fnc_MP;
 						};
 					};
 				} forEach _thisList;	//скан списка юнитов, вошедших в триггер
