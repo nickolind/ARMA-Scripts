@@ -1,28 +1,52 @@
 /*
+
 null = ["Name1", "create", 60] call compile preprocessFileLineNumbers "NSA_Timer.sqf";
+
 NSA_Timer = compile preprocessFileLineNumbers "NSA_Timer.sqf";
 ["timerName", action, TimeToWait] call NSA_Timer;
 
-
-
+When a timer reaches 0, it updates public var: 		publicVariable "NSA_timer_Alert";
+	This can be used to fire addPublicVariableEventHandler
 
 When creating timer - the name must be unique String.
 
 
 Actions:
-	"create"	-- Create new timer. 			Parameters: ["Name", "create", TimeToWait] 		Return: (Nothing)
-	"get"		-- Get timer full info.			Parameters: ["Name", "get"] 					Return: (Array) [ID, ["Name",TimeToWait, timeLeft, state]]
-	"getTime"	-- Get TimeLeft of the timer	Parameters: ["Name", "getTime"]					Return: (Int) TimeLeft (in seconds)
-	"pause"		-- Pause timer					Parameters: ["Name", "pause"]					Return: (Int) Timer ID - if successful; -1 - if timer name not found
-	"resume"	-- Resume timer					Parameters: ["Name", "resume"]					Return: (Int) Timer ID - if successful; -1 - if timer name not found
-	"delete"	-- Delete timer					Parameters: ["Name", "delete"]					Return: (Int) 1 - if successful; -1 - if timer name not found
+	
+	null = ["Name1", "create", TimeToWait] call compile preprocessFileLineNumbers "NSA_Timer.sqf";
+		-- Create new timer. 			
+			Parameters: [<String>, "create", <int>] 		
+			Return: (Nothing)
+	
+	null = ["Name1", "get"] call compile preprocessFileLineNumbers "NSA_Timer.sqf";
+		-- Get timer full info.			
+			Parameters: [<String>, "get"] 					
+			Return: (Array) [ID, ["Name",TimeToWait, timeLeft, state]]
+				state options:
+					0 - finished (timer reached 0)
+					1 - running
+					2 - paused
+	
+	null = ["Name1", "getTime"] call compile preprocessFileLineNumbers "NSA_Timer.sqf";
+		-- Get TimeLeft of the timer			
+			Parameters: [<String>, "getTime"] 					
+			Return: (Int) TimeLeft (in seconds)
+	
+	null = ["Name1", "pause"] call compile preprocessFileLineNumbers "NSA_Timer.sqf";
+		-- Pause timer		
+			Parameters: [<String>, "pause"] 					
+			Return: (Int) Timer ID - if successful; -1 - if timer name not found
+	
+	null = ["Name1", "resume"] call compile preprocessFileLineNumbers "NSA_Timer.sqf";
+		-- Resume timer		
+			Parameters: [<String>, "resume"] 					
+			Return: (Int) Timer ID - if successful; -1 - if timer name not found
+	
+	null = ["Name1", "delete"] call compile preprocessFileLineNumbers "NSA_Timer.sqf";
+		-- Delete timer		
+			Parameters: [<String>, "delete"] 					
+			Return: (Int) 1 - if successful; -1 - if timer name not found
 
-_state:
-	0 - finished
-	1 - running
-	2 - paused
-	
-	
 	
 	-- by Nickorr
 
@@ -78,11 +102,6 @@ _timeRunner = {
 	};
 	
 	if (_timerID == -1) exitWith {};
-	
-	// if (_state != 1) then {
-		// _timeLeft = ((_curTimer select 2) - (serverTime - _time)) max 0;
-		// (NSA_timer_Array select _timerID) set [2, _timeLeft];
-	// };
 	
 	if ((_timeLeft <= 0)) then {
 		_curTimer = [_timerName, "get"] call NSA_Timer;
