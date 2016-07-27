@@ -1,4 +1,4 @@
-﻿/*
+/*
 //null = [180, trg1, 1] execVM "nss_FrzTimeForWMT.sqf";
 
 //ServerSide Script
@@ -69,6 +69,10 @@ _playersList = [];
 	// _x setVehicleLock "LOCKED";
 	_x lockDriver true;
 	// sleep 0.01;
+	
+	if (_x isKindof "Air") then {
+		_x lockTurret [[0],true];
+	};
 } forEach _vehList;
 
 if (_tMode == 1) then {
@@ -174,6 +178,10 @@ waitUntil  {
 	// _x setVehicleLock "UNLOCKED";
 	[[ [_x], {
 		(_this select 0) lockDriver false;
+		
+		if ((_this select 0) isKindof "Air") then {
+			(_this select 0) lockTurret [[0],false];
+		};
 	}],"BIS_fnc_call",_x] call BIS_fnc_MP;
 		
 	// sleep 0.01;

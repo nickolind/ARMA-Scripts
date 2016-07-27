@@ -101,11 +101,11 @@ _timeRunner = {
 		sleep 1;
 	};
 	
+	_curTimer = [_timerName, "get"] call NSA_Timer;
+	_timerID = _curTimer select 0;
 	if (_timerID == -1) exitWith {};
 	
 	if ((_timeLeft <= 0)) then {
-		_curTimer = [_timerName, "get"] call NSA_Timer;
-		_timerID = _curTimer select 0;
 		(NSA_timer_Array select _timerID) set [2, 0];
 		(NSA_timer_Array select _timerID) set [3, 0];
 		

@@ -66,7 +66,7 @@ _time = serverTime;
 
 
 /* ----------- Авто создание маркера на позиции где зашли на КТ ------- */
-if (_mNotify => 1) then {
+if (_mNotify >= 1) then {
 	[_victim, _tName] spawn {
 
 		private ["_i","_ns_mark","_s_victim","_mrk_text","_s_time"];
