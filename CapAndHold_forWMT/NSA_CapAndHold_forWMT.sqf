@@ -30,7 +30,7 @@ if (isServer) then {
 
 	private ["_TEM","_ttw","_trig","_colorToSide","_time","_timeElapsed","_timeElapsedMark","_cappingSide"];
 
-	_TEM = 10;
+	_TEM = 10;	// Период обновления таймера (в целях уменьшения нагрузки на трафик)
 	_trig = _this select 1;
 	_ttw = _this select 2;
 	_cappingSide = _this select 3;
