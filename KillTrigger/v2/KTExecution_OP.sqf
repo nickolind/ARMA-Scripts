@@ -10,6 +10,7 @@ _timeToWait = _this select 3;
 _tHight = _this select 4;
 _mNotify = _this select 5;
 _message = _this select 6;
+_timeBeforeDelete = 300;	// Время до удаления маркера на нарушителя
 
 
 
@@ -67,10 +68,11 @@ _time = serverTime;
 
 /* ----------- Авто создание маркера на позиции где зашли на КТ ------- */
 if (_mNotify >= 1) then {
-	[_victim, _tName] spawn {
+	[_victim, _tName, _timeBeforeDelete] spawn {
 
-		private ["_i","_ns_mark","_s_victim","_mrk_text","_s_time"];
+		private ["_i","_ns_mark","_s_victim","_mrk_text","_s_time","_s_timeBeforeDelete"];
 		_s_victim = _this select 0;
+		_s_timeBeforeDelete = _this select 2;
 		_i = 0;
 		_mrk_text = format ["%1:%2", 
 						side group _s_victim, 
@@ -115,7 +117,7 @@ if (_mNotify >= 1) then {
 			sleep 5;
 			
 			if (_s_victim getVariable ["NSA_KT_Sent",0] != 0) exitWith { true };
-			if ((serverTime - _s_time) >= _tHight)  exitWith {deleteMarker _ns_mark; true};
+			if ((serverTime - _s_time) >= _s_timeBeforeDelete)  exitWith {deleteMarker _ns_mark; true};
 				
 		};
 
