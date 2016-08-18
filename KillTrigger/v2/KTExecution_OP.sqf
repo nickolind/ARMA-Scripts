@@ -74,10 +74,20 @@ if (_mNotify >= 1) then {
 		_s_victim = _this select 0;
 		_s_timeBeforeDelete = _this select 2;
 		_i = 0;
-		_mrk_text = format ["%1:%2", 
-						side group _s_victim, 
-						getText (configFile >> "CfgVehicles" >> (typeof vehicle _s_victim) >> "displayName")
-					];
+		_mrk_text = "";
+		
+		if ((count roleDescription _s_victim) > 0) then {
+			_mrk_text = format ["%1:%2", 
+							side group _s_victim, 
+							roleDescription _s_victim
+						];
+		} else {
+			_mrk_text = format ["%1:%2", 
+							side group _s_victim, 
+							getText (configFile >> "CfgVehicles" >> (typeof vehicle _s_victim) >> "displayName")
+						];
+		};
+		
 		_ns_mark = if ( getMarkerColor ("NSA_KT_" + (name _s_victim)) == "" ) then {
 			createMarker ["NSA_KT_" + (name _s_victim), position _s_victim ];
 		} else { 

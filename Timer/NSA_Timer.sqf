@@ -54,8 +54,7 @@ Actions:
 
 
 
-
-NSA_Timer = compile preprocessFileLineNumbers "NSA_Timer.sqf";
+if (isNil{NSA_Timer}) then { NSA_Timer = compileFinal preprocessFileLineNumbers "NSA_Timer.sqf"; };
 
 
 private ["_timerName","_timerAction","_ttw","_return","_errorReporter","_timeRunner"];
@@ -129,7 +128,7 @@ switch (_timerAction) do {
 		if (count NSA_timer_Array > 0 ) then {
 			{
 				if ( (_x select 0) == _timerName) exitWith {
-					_return = [_forEachIndex, _x];	// [1, ["Name",60, 10, 1]]
+					_return = +[_forEachIndex, _x];	// [1, ["Name",60, 10, 1]]
 				};
 				_return = [-1, []];	
 			} forEach NSA_timer_Array;
